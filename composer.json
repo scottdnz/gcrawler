@@ -1,0 +1,17 @@
+{
+    "name": "scott/v1",
+    "authors": [
+        {
+            "name": "scottdnz",
+            "email": "scottdnz@hotmail.com"
+        }
+    ],
+    "require": {
+        "fabpot/goutte": "^4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Lib\\": "Lib/"
+        }
+    }
+}

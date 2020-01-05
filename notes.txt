@@ -1,0 +1,14 @@
+t_crawler project notes:
+
+
+Need to carry on with StoredResultsParser file - sqlite commands
+would be good to have a config class
+
+put on github
+Transfer to pi - git
+-Need composer, sqlite package, sqlite db set up in /opt, 
+
+Plan to run live searches once a week, or batch per night?
+-would be good to schedule as a service...
+Store results HTML files in /data, parse them & store in sqlite db.
+
