@@ -35,44 +35,95 @@ class StoredResultsParser {
 		return $storedLinks;
 	}
 
-	// Up to here - sqlite commands need to go in
-	private function insertSearchBatch() {
 
-	}
+	/**
+	 * Parses directories containing saved html content files
+	 */
+	public function parseContentFiles($currentTerms) {
+		$allStoredLinks = [];
+		$tidiedTerms = SearchStorer::getTidiedTerms($currentTerms);
 
-	private function insertSearchResultsForBatch() {
-
-	}
-
-	//Parse directories containing saved html content files
-	public function parseContentFiles($terms) {
-		foreach ($terms as $currentTerms) {
-			$tidiedTerms = SearchStorer::getTidiedTerms($currentTerms);
-
-			$termsDir = $this->dataDir . DIRECTORY_SEPARATOR . $tidiedTerms . DIRECTORY_SEPARATOR;
-			// Find all subdirectories
-			$directories = glob($termsDir . "*" , GLOB_ONLYDIR);
-			// print_r($directories);
-
-			sort($directories);
-			$latestSubDir = end($directories); 
-			$files = scandir($latestSubDir);
-			foreach ($files as $f) {
-				if (is_dir($f)) {
-					continue;
-				}
-
-				// echo $f . PHP_EOL;
-				$fName = $latestSubDir . DIRECTORY_SEPARATOR . $f;
-				echo $fName . PHP_EOL;
-				$storedLinks = $this->parseStoredContentFile($fName);
-				var_dump($storedLinks);
-
-				// insertSearchBatch
-			}
+		$termsDir = $this->dataDir . DIRECTORY_SEPARATOR . $tidiedTerms . DIRECTORY_SEPARATOR;
+		// Find all subdirectories
+		$directories = glob($termsDir . "*" , GLOB_ONLYDIR);
+		if (count($directories) === 0) {
+			return $allStoredLinks;
 		}
 
+		sort($directories);
+		$latestSubDir = end($directories);
 
+		$files = scandir($latestSubDir);
+		foreach ($files as $f) {
+			if (is_dir($f)) {
+				continue;
+			}
+
+			// echo $f . PHP_EOL;
+			$fName = $latestSubDir . DIRECTORY_SEPARATOR . $f;
+			echo $fName . PHP_EOL;
+			$storedLinks = $this->parseStoredContentFile($fName);
+			// var_dump($storedLinks);
+
+			// insertSearchBatch
+			$allStoredLinks = array_merge($allStoredLinks, $storedLinks);
+		}
+		return $allStoredLinks;
+	}
+
+	/**
+	 * Does a single insert for search_batch.
+	 */
+	public function insertSearchBatch($terms, $dated) {
+		$sql = "insert into search_batch 
+(
+	terms, 
+	dated
+) values
+(
+	:terms,
+	:dated
+);";
+
+	 	$params = [
+			":terms" => $terms,
+			":dated" => $dated
+	    ];
+		
+		$query = $this->conn->prepare($sql);
+		$query->execute($params);
+
+	    return $this->conn->lastInsertId();
+	}
+
+	/**
+	 * Does a batch insert for search_results.
+	 */ 
+	public function insertSearchResultsForBatch($searchBatchId, $allStoredLinks) {
+		$valuesBlock = "(
+	?,
+	?,
+	?		
+)";
+
+		$valuesBlocks = array_fill(0, count($allStoredLinks), $valuesBlock);
+
+		$params = [];
+		foreach ($allStoredLinks as $stored) {
+			$params[] = $stored["label"];
+			$params[] = $stored["site"];
+			$params[] = $searchBatchId;
+		}
+
+		$sql = "insert into search_results
+(
+	site_description,
+	url,
+	search_batch_id
+) values " . implode(", ", $valuesBlocks);
+
+		$query = $this->conn->prepare($sql);
+		$query->execute($params);
 	}
 
 }

@@ -24,6 +24,9 @@ class SearchStorer {
 		return $tidiedTerms;
 	}
 
+	/**
+	 * Makes an HTTP request to fetch a page of google search results content.
+	 */
 	private function getPageContent($terms, $dateSfx, $pageNum, $start=null) {
 		// $dataDir = "./data";
 		$queryParams = ['q' => $terms];
@@ -51,6 +54,9 @@ class SearchStorer {
 		return $fName;
 	}
 
+	/**
+	 * Makes a number of HTTP requests to retreive X google search results pages.
+	 */
 	public function getPagesContentForTerms($terms, $numIterations, $numPerPage, $dateSfx) {
 		for ($i = 0; $i < $numIterations; $i++) {
 			if ($i === 0) {

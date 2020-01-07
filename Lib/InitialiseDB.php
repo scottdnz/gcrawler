@@ -21,8 +21,8 @@ class InitialiseDB {
 			    id INTEGER PRIMARY KEY,
 			    site_description TEXT NOT NULL,
 			    url TEXT NOT NULL,
-			    terms_batch_id INTEGER NOT NULL,
-			    FOREIGN KEY (terms_batch_id) REFERENCES terms_batch (id)
+			    search_batch_id INTEGER NOT NULL,
+			    FOREIGN KEY (search_batch_id) REFERENCES search_batch (id)
 		  	)',
 		 ];
 
