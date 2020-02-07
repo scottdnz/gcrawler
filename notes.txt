@@ -12,3 +12,12 @@ Plan to run live searches once a week, or batch per night?
 -would be good to schedule as a service...
 Store results HTML files in /data, parse them & store in sqlite db.
 
+apt-get install sqlite3
+cd /opt
+mkdir sqlite_dbs
+cd sqlite_dbs
+sqlite3 gcrawler.db (creates database)
+
+apt-get install php-sqlite3
+
+
