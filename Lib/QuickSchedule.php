@@ -23,8 +23,6 @@ class QuickSchedule {
      */
     private $params;
     
-    private $callback;
-
     /**
      * QuickSchedule constructor
      */
@@ -50,4 +48,3 @@ class QuickSchedule {
     }
 
 }
-
